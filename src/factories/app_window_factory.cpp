@@ -23,11 +23,11 @@ namespace engine::factories::app_window {
 			}
 			else {
 				DEBUG_MSG("no window of such type, falling back!\n");
-				goto DEFAULT_BEHAVIOUR;
+				goto FALLBACK;
 			}
 		}
 		else {
-		DEFAULT_BEHAVIOUR:
+		FALLBACK:
 			DEBUG_MSG("creating window of automatic type '%s'!\n", factory_map.begin()->first.c_str());
 			return factory_map.at(factory_map.begin()->first)();
 		}

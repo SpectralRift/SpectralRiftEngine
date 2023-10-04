@@ -26,128 +26,128 @@ namespace engine::utils {
             return { ::abs(x), ::abs(y) };
         }
 
-        template <typename _T>
-        Vector2& operator+=(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2& operator+=(const Vector2<T>& r) {
             x += r.x;
             y += r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator+=(const _T& r) {
+        template <typename T>
+        Vector2& operator+=(const T& r) {
             x += r;
             y += r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator-=(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2& operator-=(const Vector2<T>& r) {
             x -= r.x;
             y -= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator-=(const _T& r) {
+        template <typename T>
+        Vector2& operator-=(const T& r) {
             x -= r;
             y -= r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator/=(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2& operator/=(const Vector2<T>& r) {
             x /= r.x;
             y /= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator/=(const _T& r) {
+        template <typename T>
+        Vector2& operator/=(const T& r) {
             x /= r;
             y /= r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator*=(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2& operator*=(const Vector2<T>& r) {
             x *= r.x;
             y *= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator*=(const _T& r) {
+        template <typename T>
+        Vector2& operator*=(const T& r) {
             x *= r;
             y *= r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2 operator+(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2 operator+(const Vector2<T>& r) {
             x += r.x;
             y += r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator+(const _T& r) {
+        template <typename T>
+        Vector2& operator+(const T& r) {
             x += r;
             y += r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2 operator-(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2 operator-(const Vector2<T>& r) {
             x -= r.x;
             y -= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator-(const _T& r) {
+        template <typename T>
+        Vector2& operator-(const T& r) {
             x -= r;
             y -= r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2 operator/(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2 operator/(const Vector2<T>& r) {
             x /= r.x;
             y /= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator/(const _T& r) {
+        template <typename T>
+        Vector2& operator/(const T& r) {
             x /= r;
             y /= r;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2<T> operator*(const Vector2<_T>& r) {
+        template <typename T>
+        Vector2<T> operator*(const Vector2<T>& r) {
             x *= r.x;
             y *= r.y;
 
             return *this;
         }
 
-        template <typename _T>
-        Vector2& operator*(const _T& r) {
+        template <typename T>
+        Vector2& operator*(const T& r) {
             x *= r;
             y *= r;
 

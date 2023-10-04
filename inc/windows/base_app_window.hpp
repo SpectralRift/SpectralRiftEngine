@@ -26,11 +26,11 @@ namespace engine::windows {
 		virtual uintptr_t get_device_ctx() = 0;
 
 		// base window functionality
-		inline bool is_quit_requested() {
+		bool is_quit_requested() {
 			return quit_requested;
 		};
 
-		inline void quit() {
+		void quit() {
 			quit_requested = true;
 		};
 	protected:

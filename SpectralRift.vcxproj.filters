@@ -27,7 +27,16 @@
     <ClCompile Include="src\platform\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\windows\win32_app_window.cpp">
+    <ClCompile Include="src\platform\win32\windows\win32_app_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\win32\graphics\win32_graphics_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\win32\win32_platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\backends\gl_render_backend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,10 +68,25 @@
     <ClInclude Include="inc\platform\win32\windows\win32_app_window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\platform\win32\platform.hpp">
+    <ClInclude Include="inc\platform\win32\win32_platform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\platform\platform.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\graphics\i_render_backend.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\graphics\i_graphics_context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\platform\win32\graphics\win32_graphics_context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\graphics\backends\gl_render_backend.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\utils\color.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

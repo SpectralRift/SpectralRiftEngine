@@ -8,13 +8,26 @@
 #include <factories/app_window_factory.hpp>
 
 #include <platform/platform.hpp>
+#include <utils/macros/debug.hpp>
 
-void engine::init() {
-	DEBUG_MSG("engine begin!\n");
+namespace engine {
+	static graphics::IRenderBackendSPtr g_backend{};
 
-	engine::platform::init();
-}
+	void init() {
+		DEBUG_MSG("engine begin!\n");
+		engine::platform::init();
+	}
 
-void engine::terminate() {
-	DEBUG_MSG("engine termination!\n");
+	void terminate() {
+		DEBUG_MSG("engine termination!\n");
+	}
+
+	void use_backend(graphics::IRenderBackendSPtr backend) {
+		g_backend = backend;
+	}
+
+	graphics::IRenderBackendSPtr get_backend() {
+		ASSERT_MSG(g_backend, "a backend was not set previously using engine::use_backend");
+		return g_backend;
+	}
 }

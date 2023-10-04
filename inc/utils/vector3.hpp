@@ -27,8 +27,8 @@ namespace engine::utils {
 			return { ::abs(x), ::abs(y), ::abs(z) };
 		}
 
-		template <typename _T>
-		Vector3& operator+=(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3& operator+=(const Vector3<T>& r) {
 			x += r.x;
 			y += r.y;
 			z += r.z;
@@ -36,8 +36,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator+=(const _T& r) {
+		template <typename T>
+		Vector3& operator+=(const T& r) {
 			x += r;
 			y += r;
 			z += r;
@@ -45,8 +45,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator-=(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3& operator-=(const Vector3<T>& r) {
 			x -= r.x;
 			y -= r.y;
 			z -= r.z;
@@ -54,8 +54,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator-=(const _T& r) {
+		template <typename T>
+		Vector3& operator-=(const T& r) {
 			x -= r;
 			y -= r;
 			z -= r;
@@ -63,8 +63,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator/=(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3& operator/=(const Vector3<T>& r) {
 			x /= r.x;
 			y /= r.y;
 			z /= r.z;
@@ -72,8 +72,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator/=(const _T& r) {
+		template <typename T>
+		Vector3& operator/=(const T& r) {
 			x /= r;
 			y /= r;
 			z /= r;
@@ -81,8 +81,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator*=(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3& operator*=(const Vector3<T>& r) {
 			x *= r.x;
 			y *= r.y;
 			z *= r.z;
@@ -90,8 +90,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator*=(const _T& r) {
+		template <typename T>
+		Vector3& operator*=(const T& r) {
 			x *= r;
 			y *= r;
 			z *= r;
@@ -99,8 +99,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3 operator+(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3 operator+(const Vector3<T>& r) {
 			x += r.x;
 			y += r.y;
 			z += r.z;
@@ -108,8 +108,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator+(const _T& r) {
+		template <typename T>
+		Vector3& operator+(const T& r) {
 			x += r;
 			y += r;
 			z += r;
@@ -117,8 +117,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3 operator-(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3 operator-(const Vector3<T>& r) {
 			x -= r.x;
 			y -= r.y;
 			z -= r.z;
@@ -126,8 +126,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator-(const _T& r) {
+		template <typename T>
+		Vector3& operator-(const T& r) {
 			x -= r;
 			y -= r;
 			z -= r;
@@ -135,8 +135,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3 operator/(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3 operator/(const Vector3<T>& r) {
 			x /= r.x;
 			y /= r.y;
 			z /= r.z;
@@ -144,8 +144,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator/(const _T& r) {
+		template <typename T>
+		Vector3& operator/(const T& r) {
 			x /= r;
 			y /= r;
 			z /= r;
@@ -153,8 +153,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3<T> operator*(const Vector3<_T>& r) {
+		template <typename T>
+		Vector3<T> operator*(const Vector3<T>& r) {
 			x *= r.x;
 			y *= r.y;
 			z *= r.z;
@@ -162,8 +162,8 @@ namespace engine::utils {
 			return *this;
 		}
 
-		template <typename _T>
-		Vector3& operator*(const _T& r) {
+		template <typename T>
+		Vector3& operator*(const T& r) {
 			x *= r;
 			y *= r;
 			z *= r;

@@ -182,15 +182,23 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\factories\app_window_factory.cpp" />
+    <ClCompile Include="src\graphics\backends\gl_render_backend.cpp" />
     <ClCompile Include="src\platform\platform.cpp" />
-    <ClCompile Include="src\platform\windows\win32_app_window.cpp" />
+    <ClCompile Include="src\platform\win32\graphics\win32_graphics_context.cpp" />
+    <ClCompile Include="src\platform\win32\win32_platform.cpp" />
+    <ClCompile Include="src\platform\win32\windows\win32_app_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\api.hpp" />
     <ClInclude Include="inc\engine.hpp" />
+    <ClInclude Include="inc\graphics\i_graphics_context.hpp" />
+    <ClInclude Include="inc\graphics\i_render_backend.hpp" />
+    <ClInclude Include="inc\graphics\backends\gl_render_backend.hpp" />
     <ClInclude Include="inc\platform\platform.hpp" />
-    <ClInclude Include="inc\platform\win32\platform.hpp" />
+    <ClInclude Include="inc\platform\win32\graphics\win32_graphics_context.hpp" />
+    <ClInclude Include="inc\platform\win32\win32_platform.hpp" />
     <ClInclude Include="inc\platform\win32\windows\win32_app_window.hpp" />
+    <ClInclude Include="inc\utils\color.hpp" />
     <ClInclude Include="inc\utils\macros\debug.hpp" />
     <ClInclude Include="inc\platform\win32\macros.hpp" />
     <ClInclude Include="inc\utils\vector2.hpp" />

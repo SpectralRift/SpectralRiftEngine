@@ -1,4 +1,3 @@
-#include <cassert>
 #include <system_error>
 
 #include <platform/win32/windows/win32_app_window.hpp>
@@ -55,7 +54,7 @@ namespace engine::windows {
 
 			win_class.cbSize = sizeof(WNDCLASSEX);
 
-			win_class.style = CS_HREDRAW | CS_VREDRAW | CS_CLASSDC;
+			win_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 			win_class.lpfnWndProc = window_processor_static;
 			win_class.cbClsExtra = 0;
 			win_class.cbWndExtra = 0;
@@ -83,6 +82,9 @@ namespace engine::windows {
 			}
 
 			SetWindowLongA(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+			// get the device context of this window and store it so that we don't ask for it many times
+			device_context_handle = GetDC(window_handle);
 		}
 
 		quit_requested = false;
@@ -91,6 +93,11 @@ namespace engine::windows {
 	}
 
 	void Win32AppWindow::destroy() {
+		if (device_context_handle) {
+			ReleaseDC(window_handle, device_context_handle);
+			device_context_handle = 0;
+		}
+
 		if (window_handle) {
 			if (!DestroyWindow(window_handle)) {
 				DEBUG_MSG("DestroyWindow failed: %s\n", std::system_category().message(GetLastError()).c_str());
@@ -167,6 +174,8 @@ namespace engine::windows {
 	}
 
 	utils::IVector2 Win32AppWindow::get_size() {
+		assert_window_init();
+
 		RECT win_rect;
 
 		if (!GetWindowRect(window_handle, &win_rect)) {
@@ -180,6 +189,8 @@ namespace engine::windows {
 	}
 
 	utils::IVector2 Win32AppWindow::get_position() {
+		assert_window_init();
+
 		RECT win_rect;
 
 		if (!GetWindowRect(window_handle, &win_rect)) {
@@ -192,5 +203,8 @@ namespace engine::windows {
 		return { 0, 0 };
 	}
 
-	uintptr_t Win32AppWindow::get_device_ctx() { return 0; }
+	uintptr_t Win32AppWindow::get_device_ctx() { 
+		assert_window_init();
+		return (uintptr_t) device_context_handle;
+	}
 }

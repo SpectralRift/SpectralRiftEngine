@@ -8,4 +8,14 @@ namespace engine::platform {
 #endif
 		// Platform-specific conditional initialization ends here.
 	}
+
+	namespace graphics {
+		uintptr_t get_gl_func(const char* name) {
+#ifdef ENGINE_TARGET_WIN32
+			return win32::graphics::get_gl_func(name);
+#else
+			return NULL;
+#endif
+		}
+	}
 }

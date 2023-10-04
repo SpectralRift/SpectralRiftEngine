@@ -26,6 +26,7 @@ namespace engine::windows {
 		uintptr_t get_device_ctx();
 	private:
 		HWND window_handle{};
+		HDC device_context_handle{};
 
 		void assert_window_init();
 
