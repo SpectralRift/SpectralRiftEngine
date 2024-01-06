@@ -1,227 +1,293 @@
 #include <stdexcept>
 
+#include <engine.hpp>
+
 #include <graphics/backends/gl_render_backend.hpp>
 #include <utils/macros/debug.hpp>
-#include <platform/platform.hpp>
+#include <graphics/debug.hpp>
 
-#include <glad/glad.h>
+#if defined(ENGINE_BACKEND_OPENGL_ES)
+#include <glad/gles2.h>
+#else
+#include "glad/gl.h"
+#endif
 
 namespace engine::graphics::backends {
-	uintptr_t GLRenderBackend::buffer_target_mapper(BufferTarget target) {
-		if (target == ARRAY_BUFFER) {
-			return GL_ARRAY_BUFFER;
-		}
+    uintptr_t GLRenderBackend::buffer_target_mapper(utils::enums::graphics::BufferTarget target) {
+        if (target == utils::enums::graphics::ARRAY_BUFFER) {
+            return GL_ARRAY_BUFFER;
+        }
 
-		return GL_NONE;
-	}
+        return GL_NONE;
+    }
 
-	uintptr_t GLRenderBackend::shader_type_mapper(ShaderType type) {
-		if (type == VERTEX) {
-			return GL_VERTEX_SHADER;
-		}
-		else if (type == FRAGMENT) {
-			return GL_FRAGMENT_SHADER;
-		}
+    uintptr_t GLRenderBackend::shader_type_mapper(utils::enums::graphics::ShaderType type) {
+        if (type == utils::enums::graphics::VERTEX) {
+            return GL_VERTEX_SHADER;
+        } else if (type == utils::enums::graphics::FRAGMENT) {
+            return GL_FRAGMENT_SHADER;
+        }
 
-		return GL_NONE;
-	}
+        return GL_NONE;
+    }
 
-	uintptr_t GLRenderBackend::data_type_mapper(DataType type) {
-		if (type == INT) {
-			return GL_INT;
-		}
-		else if (type == FLOAT) {
-			return GL_FLOAT;
-		}
+    uintptr_t GLRenderBackend::data_type_mapper(utils::enums::graphics::DataType type) {
+        if (type == utils::enums::graphics::DataType::INT) {
+            return GL_INT;
+        } else if (type == utils::enums::graphics::DataType::FLOAT) {
+            return GL_FLOAT;
+        }
 
-		return GL_NONE;
-	}
+        return GL_NONE;
+    }
 
-	uintptr_t GLRenderBackend::primitive_type_mapper(PrimitiveType type) {
-		if (type == TRIANGLES) {
-			return GL_TRIANGLES;
-		}
-		else if (type == POINTS) {
-			return GL_POINTS;
-		}
-		else if (type == LINES) {
-			return GL_LINES;
-		}
+    uintptr_t GLRenderBackend::primitive_type_mapper(utils::enums::graphics::PrimitiveType type) {
+        if (type == utils::enums::graphics::PrimitiveType::TRIANGLES) {
+            return GL_TRIANGLES;
+        } else if (type == utils::enums::graphics::PrimitiveType::POINTS) {
+            return GL_POINTS;
+        } else if (type == utils::enums::graphics::PrimitiveType::LINES) {
+            return GL_LINES;
+        }
 
-		return GL_NONE;
-	}
+        return GL_NONE;
+    }
 
-	bool GLRenderBackend::init() {
-		if (!gladLoadGLLoader((GLADloadproc)engine::platform::graphics::get_gl_func)) {
-			DEBUG_MSG("Failed to load OpenGL through glad!\n");
-			return false;
-		}
+    std::vector<engine::utils::enums::graphics::ShaderLanguage> GLRenderBackend::get_supported_shader_languages() {
+#if defined(ENGINE_BACKEND_OPENGL_ES)
+        return {engine::utils::enums::graphics::ShaderLanguage::GLSL_ES};
+#else
+        return {engine::utils::enums::graphics::ShaderLanguage::GLSL,
+                engine::utils::enums::graphics::ShaderLanguage::GLSL_ES};
+#endif
+    }
 
-		if (!gladLoadGL()) {
-			DEBUG_MSG("Failed to initialize OpenGL through glad!\n");
-			return false;
-		}
+    utils::Version GLRenderBackend::get_version() {
+        GLint major = 0;
+        GLint minor = 0;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-		DEBUG_MSG("OpenGL %d.%d (%s) loaded!\n", GLVersion.major, GLVersion.minor, glGetString(GL_VENDOR));
-		DEBUG_MSG("Renderer: %s\n", glGetString(GL_RENDERER))
-			DEBUG_MSG("Extensions: %s\n", glGetString(GL_EXTENSIONS));
+        return {major, minor};
+    }
 
-		return true;
-	}
+    bool GLRenderBackend::is_mobile() {
+#if defined(ENGINE_BACKEND_OPENGL_ES)
+        return true;
+#else
+        return false;
+#endif
+    }
 
-	void GLRenderBackend::set_viewport_size(const utils::IVector2& size) {
-		glViewport(0, 0, size.x, size.y);
-	}
+    uintptr_t GLRenderBackend::gl_loader(std::string_view name) {
+        return engine::get_graphics_context()->get_proc_func(name);
+    }
 
-	void GLRenderBackend::set_clear_color(const utils::Color& color) {
-		glClearColor(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f);
-	}
+    bool GLRenderBackend::init() {
+//        if (!gladLoadGLLoader((GLADloadfunc) gl_loader)) {
+//            DEBUG_MSG("Failed to load OpenGL through glad!\n");
+//            return false;
+//        }
 
-	void GLRenderBackend::clear() {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
+#if defined(ENGINE_TARGET_ANDROID)
+        // use GLES2 instead of GL
+        int version = gladLoaderLoadGLES2();
+#else
+        int version = gladLoadGL((GLADloadfunc) gl_loader);
+#endif
 
-	uintptr_t GLRenderBackend::create_buffer() {
-		uintptr_t buf_id = -1;
-		glGenBuffers(1, &buf_id);
+        if (!version) {
+            DEBUG_MSG("Failed to initialize OpenGL through glad!\n");
+            return false;
+        }
 
-		return buf_id;
-	}
+        DEBUG_MSG("OpenGL %d.%d (%s) loaded!\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version), glGetString(GL_VENDOR));
+        DEBUG_MSG("Renderer: %s\n", glGetString(GL_RENDERER))
+        DEBUG_MSG("Extensions: %s\n", glGetString(GL_EXTENSIONS))
 
-	void GLRenderBackend::bind_buffer(uintptr_t id, BufferTarget target) {
-		GLenum buffer_target = buffer_target_mapper(target);
+        return true;
+    }
 
-		if (buffer_target == GL_NONE) {
-			throw std::runtime_error("invalid buffer target!");
-		}
+    void GLRenderBackend::set_viewport_size(const utils::IVector2 &size) {
+        glViewport(0, 0, size.x, size.y);
+    }
 
-		glBindBuffer(buffer_target, id);
-	}
+    void GLRenderBackend::set_clear_color(const utils::Color &color) {
+        glClearColor(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f);
+    }
 
-	void GLRenderBackend::set_buffer_data(BufferTarget target, size_t buffer_size, size_t type_size, void* buf) {
-		GLenum buffer_target = buffer_target_mapper(target);
+    void GLRenderBackend::clear() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
-		if (buffer_target == GL_NONE) {
-			throw std::runtime_error("invalid buffer target!");
-		}
+    uintptr_t GLRenderBackend::create_buffer() {
+        GLuint buf_id = -1;
+        glGenBuffers(1, &buf_id);
 
-		glBufferData(buffer_target, buffer_size * type_size, buf, GL_STATIC_DRAW);
-	}
+        if(buf_id != -1) {
+            debug::vbo_count++;
+        }
 
-	void GLRenderBackend::draw_buffer(int vertices_count, PrimitiveType type) {
-		GLenum primitive_type = primitive_type_mapper(type);
+        return buf_id;
+    }
 
-		if (primitive_type == GL_NONE) {
-			throw std::runtime_error("invalid primitive type!");
-		}
+    void GLRenderBackend::delete_buffer(uintptr_t id) {
+        DEBUG_MSG("glDeleteBuffers %u", id)
+        DEBUG_MSG("glDeleteBuffers = %x\n", (uintptr_t) &glCreateProgram)
 
-		glDrawArrays(primitive_type, 0, vertices_count);
-	}
+        glDeleteBuffers(1, (GLuint*) id);
 
-	uintptr_t GLRenderBackend::create_vertex_buffer() {
-		uintptr_t buf_id = -1;
-		glGenVertexArrays(1, &buf_id);
+        debug::vbo_count--;
+    }
 
-		return buf_id;
-	}
+    void GLRenderBackend::bind_buffer(uintptr_t id, utils::enums::graphics::BufferTarget target) {
+        GLenum buffer_target = buffer_target_mapper(target);
 
-	void GLRenderBackend::bind_vertex_buffer(uintptr_t id) {
-		glBindVertexArray(id);
-	}
+        if (buffer_target == GL_NONE) {
+            throw std::runtime_error("invalid buffer target!");
+        }
 
-	uintptr_t GLRenderBackend::create_shader(ShaderType type) {
-		GLenum shader_type = shader_type_mapper(type);
+        glBindBuffer(buffer_target, id);
+    }
 
-		if (shader_type == GL_NONE) {
-			throw std::runtime_error("invalid shader type!");
-		}
+    void
+    GLRenderBackend::set_buffer_data(utils::enums::graphics::BufferTarget target, size_t buffer_size, size_t type_size,
+                                     void *buf) {
+        GLenum buffer_target = buffer_target_mapper(target);
 
-		uintptr_t shader_id = glCreateShader(shader_type);
-		if (shader_id == 0) shader_id = -1;
+        if (buffer_target == GL_NONE) {
+            throw std::runtime_error("invalid buffer target!");
+        }
 
-		return shader_id;
-	}
+        glBufferData(buffer_target, buffer_size * type_size, buf, GL_STATIC_DRAW);
+    }
 
-	void GLRenderBackend::use_shader_source(uintptr_t id, std::string_view source) {
-		const char* srcs[1] = { source.data() };
-		const GLint sizes[1] = { (GLint) source.size() };
+    void GLRenderBackend::draw_buffer(int vertices_count, utils::enums::graphics::PrimitiveType type) {
+        GLenum primitive_type = primitive_type_mapper(type);
 
-		glShaderSource(id, 1, srcs, sizes);
-	}
+        if (primitive_type == GL_NONE) {
+            throw std::runtime_error("invalid primitive type!");
+        }
 
-	bool GLRenderBackend::compile_shader(uintptr_t shader) {
-		int ret;
+        glDrawArrays(primitive_type, 0, vertices_count);
+    }
 
-		glCompileShader(shader);
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &ret);
+    uintptr_t GLRenderBackend::create_vertex_buffer() {
+        GLuint buf_id = -1;
+        glGenVertexArrays(1, &buf_id);
 
-		return ret == GL_TRUE;
-	}
+        if(buf_id != -1) {
+            debug::vao_count++;
+        }
 
-	void GLRenderBackend::delete_shader(uintptr_t id) {
-		glDeleteShader(id);
-	}
+        return buf_id;
+    }
 
-	std::string GLRenderBackend::get_shader_log(uintptr_t id) {
-		int log_len = 0;
-		std::string shader_log = "none";
+    void GLRenderBackend::delete_vertex_buffer(uintptr_t id) {
+        GLuint array[1] {(GLuint) id};
+        glDeleteVertexArrays(1, array);
 
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_len);
+        debug::vao_count--;
+    }
 
-		if (log_len) {
-			shader_log.resize(log_len);
-			glGetShaderInfoLog(id, log_len, NULL, &shader_log[0]);
-		}
+    void GLRenderBackend::bind_vertex_buffer(uintptr_t id) {
+        glBindVertexArray(id);
+    }
 
-		return shader_log;
-	}
+    uintptr_t GLRenderBackend::create_shader(utils::enums::graphics::ShaderType type) {
+        GLenum shader_type = shader_type_mapper(type);
 
-	uintptr_t GLRenderBackend::create_shader_program() {
-		uintptr_t id = glCreateProgram();
-		if (id == 0) id = -1;
+        if (shader_type == GL_NONE) {
+            throw std::runtime_error("invalid shader type!");
+        }
 
-		return id;
-	}
+        uintptr_t shader_id = glCreateShader(shader_type);
+        if (shader_id == 0) shader_id = -1;
 
-	void GLRenderBackend::use_shader_program(uintptr_t id) {
-		glUseProgram(id);
-	}
+        return shader_id;
+    }
 
-	void GLRenderBackend::attach_shader_to_program(uintptr_t program_id, uintptr_t shader_id) {
-		glAttachShader(program_id, shader_id);
-	}
+    void GLRenderBackend::use_shader_source(uintptr_t id, std::string_view source) {
+        const char *srcs[1] = {source.data()};
+        const GLint sizes[1] = {(GLint) source.size()};
 
-	bool GLRenderBackend::link_program(uintptr_t id) {
-		int ret;
+        glShaderSource(id, 1, srcs, sizes);
+    }
 
-		glLinkProgram(id);
-		glGetProgramiv(id, GL_LINK_STATUS, &ret);
+    bool GLRenderBackend::compile_shader(uintptr_t shader) {
+        int ret;
 
-		return ret == GL_TRUE;
-	}
+        glCompileShader(shader);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &ret);
 
-	std::string GLRenderBackend::get_program_log(uintptr_t id) {
-		int log_len = 0;
-		std::string program_log = "none";
+        return ret == GL_TRUE;
+    }
 
-		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &log_len);
+    void GLRenderBackend::delete_shader(uintptr_t id) {
+        glDeleteShader(id);
+    }
 
-		if (log_len) {
-			program_log.resize(log_len);
-			glGetProgramInfoLog(id, log_len, NULL, &program_log[0]);
-		}
+    std::string GLRenderBackend::get_shader_log(uintptr_t id) {
+        int log_len = 0;
+        std::string shader_log = "none";
 
-		return program_log;
-	}
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &log_len);
 
-	void GLRenderBackend::define_vertex_attrib(uintptr_t index, DataType type, int count, int stride) {
-		GLenum data_type = data_type_mapper(type);
+        if (log_len) {
+            shader_log.resize(log_len);
+            glGetShaderInfoLog(id, log_len, NULL, &shader_log[0]);
+        }
 
-		if (data_type == GL_NONE) {
-			throw std::runtime_error("invalid data type!");
-		}
+        return shader_log;
+    }
 
-		glVertexAttribPointer(index, count, data_type, GL_FALSE, stride, 0);
-		glEnableVertexAttribArray(index);
-	}
+    uintptr_t GLRenderBackend::create_shader_program() {
+        uintptr_t id = glCreateProgram();
+        if (id == 0) id = PTR_NULL;
+
+        return id;
+    }
+
+    void GLRenderBackend::use_shader_program(uintptr_t id) {
+        glUseProgram(id);
+    }
+
+    void GLRenderBackend::attach_shader_to_program(uintptr_t program_id, uintptr_t shader_id) {
+        glAttachShader(program_id, shader_id);
+    }
+
+    bool GLRenderBackend::link_program(uintptr_t id) {
+        int ret;
+
+        glLinkProgram(id);
+        glGetProgramiv(id, GL_LINK_STATUS, &ret);
+
+        return ret == GL_TRUE;
+    }
+
+    std::string GLRenderBackend::get_program_log(uintptr_t id) {
+        int log_len = 0;
+        std::string program_log = "none";
+
+        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &log_len);
+
+        if (log_len) {
+            program_log.resize(log_len);
+            glGetProgramInfoLog(id, log_len, NULL, &program_log[0]);
+        }
+
+        return program_log;
+    }
+
+    void GLRenderBackend::define_vertex_attrib(uintptr_t index, utils::enums::graphics::DataType type, int count,
+                                               int stride) {
+        GLenum data_type = data_type_mapper(type);
+
+        if (data_type == GL_NONE) {
+            throw std::runtime_error("invalid data type!");
+        }
+
+        glVertexAttribPointer(index, count, data_type, GL_FALSE, stride, 0);
+        glEnableVertexAttribArray(index);
+    }
 }

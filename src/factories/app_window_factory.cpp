@@ -1,5 +1,3 @@
-#pragma once
-
 #include <map>
 #include <string>
 
@@ -22,16 +20,13 @@ namespace engine::factories::app_window {
 				return factory_map.at(preferred_type.value().data())();
 			}
 			else {
-				DEBUG_MSG("no window of such type, falling back!\n");
-				goto FALLBACK;
+				DEBUG_MSG("no window of such type, falling back to type '%s'\n", factory_map.begin()->first.c_str());
+                return factory_map.at(factory_map.begin()->first)();
 			}
 		}
 		else {
-		FALLBACK:
 			DEBUG_MSG("creating window of automatic type '%s'!\n", factory_map.begin()->first.c_str());
 			return factory_map.at(factory_map.begin()->first)();
 		}
-
-		return NULL;
 	}
 }
