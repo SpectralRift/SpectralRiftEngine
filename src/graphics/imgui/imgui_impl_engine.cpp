@@ -5,7 +5,7 @@
 #include <graphics/imgui/imgui_engine.hpp>
 #include <graphics/imgui/imgui_impl_engine_window.hpp>
 
-//#define USE_IMGUI_IMPL
+// #define USE_IMGUI_IMPL
 
 #if defined(ENGINE_BACKEND_OPENGL) || defined(ENGINE_BACKEND_OPENGL_ES)
 
@@ -21,8 +21,6 @@
 
 namespace engine::graphics::imgui {
     bool ImGui_ImplEngine_Init() {
-        ImGui::SetCurrentContext(get_context());
-
 #if defined(ENGINE_BACKEND_OPENGL) || defined(ENGINE_BACKEND_OPENGL_ES)
 #if defined(USE_IMGUI_IMPL)
         return ImGui_ImplOpenGL3_Init();

@@ -1,4 +1,5 @@
 #if defined(ENGINE_FEATURE_EGL)
+
 #include <graphics/contexts/egl_graphics_context.hpp>
 
 #include <system_error>
@@ -7,11 +8,11 @@
 #include <engine.hpp>
 
 #ifdef ENGINE_TARGET_ANDROID
-
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <platform/platform.hpp>
-
+#elif ENGINE_TARGET_SWITCH
+#include <switch/display/native_window.h>
 #endif
 
 namespace engine::graphics {
@@ -52,24 +53,35 @@ namespace engine::graphics {
         }
     }
 
-    uintptr_t EGLGraphicsContext::egl_loader(std::string_view name) {
-        return engine::get_graphics_context()->get_proc_func(name);
-    }
+//    uintptr_t EGLGraphicsContext::egl_loader(std::string_view name) {
+//        return engine::get_graphics_context()->get_proc_func(name);
+//    }
 
-    bool EGLGraphicsContext::init(windows::BaseAppWindowSPtr window) {
+    bool EGLGraphicsContext::init() {
         const EGLint attribsCtx[] = {
+#if !defined(ENGINE_FEATURE_EGL_GL_CORE)
                 EGL_CONTEXT_CLIENT_VERSION, 2,
+#else
+                EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
+                EGL_CONTEXT_MAJOR_VERSION_KHR, 4,
+                EGL_CONTEXT_MINOR_VERSION_KHR, 3,
+#endif
                 EGL_NONE
         };
 
         const EGLint attribs[] = {
                 EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-#if defined(ENGINE_TARGET_ANDROID)
+#if !defined(ENGINE_FEATURE_EGL_GL_CORE)
                 EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+#else
+                EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
 #endif
                 EGL_BLUE_SIZE, 8,
                 EGL_GREEN_SIZE, 8,
                 EGL_RED_SIZE, 8,
+                EGL_ALPHA_SIZE, 8,
+                EGL_DEPTH_SIZE, 24,
+                EGL_STENCIL_SIZE, 8,
                 EGL_NONE
         };
 
@@ -77,44 +89,38 @@ namespace engine::graphics {
         EGLint numConfigs;
         EGLint format;
 
-        int egl_version = gladLoaderLoadEGL(EGL_DEFAULT_DISPLAY);
-
-        if (!egl_version) {
-            DEBUG_MSG("Failed to load EGL through glad!\n")
-            return false;
-        }
-
-        DEBUG_MSG("Loaded EGL %d.%d.\n", GLAD_VERSION_MAJOR(egl_version),
-                  GLAD_VERSION_MINOR(egl_version))
-
         if ((display = eglGetDisplay(EGL_DEFAULT_DISPLAY)) == EGL_NO_DISPLAY) {
             DEBUG_MSG("eglGetDisplay failed! %s\n", egl_get_error_string(eglGetError()).data())
             return false;
         }
 
-        if (!eglInitialize(display, 0, 0)) {
+        if (!eglInitialize(display, nullptr, nullptr)) {
             DEBUG_MSG("eglInitialize failed! %s\n", egl_get_error_string(eglGetError()).data())
             return false;
         }
 
-        DEBUG_MSG("eglChooseConfig\n")
+        DEBUG_MSG("Loaded EGL %s.\n", eglQueryString(display, EGL_VERSION))
+
+#if defined(ENGINE_FEATURE_EGL_GL_CORE)
+        // configure OpenGL Core API
+        if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
+            DEBUG_MSG("eglBindAPI failed! %s\n", egl_get_error_string(eglGetError()).data())
+            return false;
+        }
+#endif
 
         if (!eglChooseConfig(display, attribs, &config, 1, &numConfigs)) {
             DEBUG_MSG("eglChooseConfig failed! %s\n", egl_get_error_string(eglGetError()).data())
             return false;
         }
 
-        DEBUG_MSG("eglCreateWindowSurface\n")
+        surface = eglCreateWindowSurface(display, config, window, nullptr);
 
-        if (!(surface = eglCreateWindowSurface(display, config,
-                                               (EGLNativeWindowType) window->get_window_handle(),
-                                               0))) {
+        if (!surface) {
             DEBUG_MSG("eglCreateWindowSurface failed! %s\n",
                       egl_get_error_string(eglGetError()).data())
             return false;
         }
-
-        DEBUG_MSG("eglGetConfigAttrib\n")
 
         if (!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format)) {
             DEBUG_MSG("eglGetConfigAttrib failed! %s\n",
@@ -123,18 +129,12 @@ namespace engine::graphics {
         }
 
 #if defined(ENGINE_TARGET_ANDROID)
-        DEBUG_MSG("ANativeWindow_setBuffersGeometry\n")
-
-        DEBUG_MSG("our window PTR %x\n", window->get_window_handle())
-
         // set buffers geometry - only on Android
         ANativeWindow_setBuffersGeometry((ANativeWindow *) window->get_window_handle(), 0, 0,
                                          format);
 #endif
 
-        DEBUG_MSG("eglCreateContext\n")
-
-        if (!(context = eglCreateContext(display, config, 0, attribsCtx))) {
+        if (!(context = eglCreateContext(display, config, EGL_NO_CONTEXT, attribsCtx))) {
             DEBUG_MSG("eglCreateContext failed! %s\n", egl_get_error_string(eglGetError()).data())
             return false;
         }

@@ -83,6 +83,21 @@ namespace engine::graphics {
         }
     }
 
+    void ShaderProgram::set_uniform(std::string_view name, const utils::Color& color) {
+        auto uf = engine::get_backend()->get_program_uniform(handle, name);
+        engine::get_backend()->set_uniform_color(uf, color);
+    }
+
+    void ShaderProgram::set_uniform(std::string_view name, const glm::mat4& mat) {
+        auto uf = engine::get_backend()->get_program_uniform(handle, name);
+        engine::get_backend()->set_uniform_mat4(uf, mat);
+    }
+
+    void ShaderProgram::set_uniform(std::string_view name, int val) {
+        auto uf = engine::get_backend()->get_program_uniform(handle, name);
+        engine::get_backend()->set_uniform_int(uf, val);
+    }
+
     uintptr_t ShaderProgram::get_handle() const {
         return handle;
     }

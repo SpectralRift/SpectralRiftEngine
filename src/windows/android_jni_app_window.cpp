@@ -7,6 +7,16 @@
 
 namespace engine::windows {
     bool AndroidJNIAppWindow::init() {
+        // create graphical context
+        if (gfx_ctx == nullptr) {
+            gfx_ctx = std::make_shared<engine::graphics::EGLGraphicsContext>(window);
+
+            if (!gfx_ctx->init()) {
+                DEBUG_MSG("failed to create a graphical context!\n");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -42,12 +52,37 @@ namespace engine::windows {
 
     void AndroidJNIAppWindow::hide() {}
 
-    uintptr_t AndroidJNIAppWindow::get_device_ctx() {
-        return PTR_NULL;
+    void* AndroidJNIAppWindow::get_device_ctx() {
+        return NULL;
     }
 
-    uintptr_t AndroidJNIAppWindow::get_window_handle() {
-        return (uintptr_t) window;
+    void* AndroidJNIAppWindow::get_window_handle() {
+        return (void*) window;
+    }
+
+    bool AndroidJNIAppWindow::handle_input_event(int action, int source, const utils::IVector2 &pos) {
+        switch (action) {
+            case AMOTION_EVENT_ACTION_UP:
+                ev_mouse_key_up.invoke(pos, utils::enums::input::MouseButton::MOUSE_LEFT, true);
+                break;
+            case AMOTION_EVENT_ACTION_DOWN:
+                ev_mouse_key_down.invoke(pos, utils::enums::input::MouseButton::MOUSE_LEFT, true);
+                break;
+            case AMOTION_EVENT_ACTION_MOVE:
+            case AMOTION_EVENT_ACTION_HOVER_MOVE:
+            case AMOTION_EVENT_ACTION_HOVER_EXIT:
+            case AMOTION_EVENT_ACTION_HOVER_ENTER:
+                if(source != AINPUT_SOURCE_JOYSTICK) {
+                    ev_mouse_move.invoke(pos, true);
+                } else {
+                    DEBUG_MSG("joystick input! %ix%i", pos.x, pos.y)
+                }
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 }
 #endif

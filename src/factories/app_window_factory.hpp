@@ -26,7 +26,7 @@ namespace engine::factories::app_window {
 
 		if (!w->init()) {
 			DEBUG_MSG("window factory failed; window init failed!");
-			return 0;
+			return nullptr;
 		}
 
 		w->set_title(title);

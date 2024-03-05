@@ -6,6 +6,10 @@
 
 namespace engine::utils {
 #pragma pack(push, 1)
+    struct RGBColor {
+        uint8_t r, g, b;
+    };
+
 	/// <summary>
 	/// Stores a quad-dimensional packed point(RGBA color) of the specified type.
 	/// </summary>
@@ -16,11 +20,11 @@ namespace engine::utils {
 			: r(0), g(0), b(0), a(0) {
 		}
 
-		explicit RGBAColor(const RGBAColor<T>& rhs)
+        RGBAColor(const RGBAColor<T>& rhs)
 			: r(rhs.r), g(rhs.g), b(rhs.b), a(rhs.a) {
 		}
 
-		explicit RGBAColor(T r, T g, T b, T a = 255)
+        RGBAColor(T r, T g, T b, T a = 255)
 			: r(r), g(g), b(b), a(a) {
 		}
 

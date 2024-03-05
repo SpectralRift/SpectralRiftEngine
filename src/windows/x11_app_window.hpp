@@ -8,7 +8,7 @@
 #include <X11/Xlib.h>
 
 namespace engine::windows {
-	struct X11AppWindow : public BaseAppWindow {
+	struct ENGINE_API X11AppWindow : public BaseAppWindow {
 		bool init();
 		void destroy();
 
@@ -25,13 +25,17 @@ namespace engine::windows {
 		void show();
 		void hide();
 
-		uintptr_t get_device_ctx();
-		uintptr_t get_window_handle();
+		void* get_device_ctx();
+		void* get_window_handle();
 	private:
-		Display* display{ nullptr };
-		Window window;
+        static utils::enums::input::MouseButton map_xorg_mouse_button(int button);
 
-		Atom wm_delete_message;
-	};
+		Display* display{ nullptr };
+		Window window{};
+
+		Atom wm_delete_message{};
+
+        static utils::enums::input::KeyType map_xorg_key_type(KeySym key);
+    };
 }
 #endif

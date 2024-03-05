@@ -5,8 +5,9 @@
 
 namespace engine::assets {
 	struct ENGINE_API GenericAssetManager : public IAssetManager {
-		void open(std::string_view file);
+        io::IStreamSPtr get_asset(std::string_view file);
 		bool file_exists(std::string_view file);
-		std::vector<uint8_t> read_all(std::string_view file);
+    private:
+        static std::string get_assets_folder(std::string_view file);
 	};
 }

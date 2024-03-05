@@ -1,1 +1,1 @@
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm" glm)

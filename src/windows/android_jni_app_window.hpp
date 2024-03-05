@@ -6,9 +6,10 @@
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+#include <android/input.h>
 
 namespace engine::windows {
-	struct AndroidJNIAppWindow : public BaseAppWindow {
+	struct ENGINE_API AndroidJNIAppWindow : public BaseAppWindow {
         AndroidJNIAppWindow(ANativeWindow* window) : window(window) {}
 
 		bool init();
@@ -27,8 +28,10 @@ namespace engine::windows {
 		void show();
 		void hide();
 
-		uintptr_t get_device_ctx();
-		uintptr_t get_window_handle();
+		void* get_device_ctx();
+		void* get_window_handle();
+
+        bool handle_input_event(int action, int source, const utils::IVector2& pos);
 	private:
         ANativeWindow* window;
 	};

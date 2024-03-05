@@ -21,6 +21,7 @@ namespace engine::graphics::backends {
 		void bind_buffer(uintptr_t id, utils::enums::graphics::BufferTarget target);
 		void set_buffer_data(utils::enums::graphics::BufferTarget target, size_t buffer_size, size_t type_size, void* buf);
 		void draw_buffer(int vertices_count, utils::enums::graphics::PrimitiveType type);
+        void draw_indexed_buffer(int indices_count, utils::enums::graphics::DataType index_data_type, utils::enums::graphics::PrimitiveType type);
 
 		uintptr_t create_vertex_buffer();
         void delete_vertex_buffer(uintptr_t id);
@@ -36,9 +37,22 @@ namespace engine::graphics::backends {
 		void use_shader_program(uintptr_t id);
 		void attach_shader_to_program(uintptr_t program_id, uintptr_t shader_id);
 		bool link_program(uintptr_t id);
-		std::string get_program_log(uintptr_t id);
 
-		void define_vertex_attrib(uintptr_t index, utils::enums::graphics::DataType type, int count, int stride);
+		std::string get_program_log(uintptr_t id);
+        uintptr_t get_program_uniform(uintptr_t handle, std::string_view name);
+        void set_uniform_color(uintptr_t uf_handle, const utils::Color& color);
+        void set_uniform_mat4(uintptr_t uf_handle, const glm::mat4& mat);
+        void set_uniform_int(uintptr_t uf_handle, int val);
+
+        uintptr_t create_texture();
+        void delete_texture(uintptr_t id);
+        void bind_texture(uintptr_t id, uint16_t slot);
+        void upload_texture_data(uintptr_t id, const utils::ColorArray& data, const utils::IVector2& size);
+
+		void define_vertex_attrib(uintptr_t index, utils::enums::graphics::DataType type, int count, int stride, uintptr_t offset);
+
+        void enable_wireframe(bool state);
+        void enable_features(uint32_t features);
 	private:
 		static uintptr_t buffer_target_mapper(utils::enums::graphics::BufferTarget target);
 		static uintptr_t shader_type_mapper(utils::enums::graphics::ShaderType type);

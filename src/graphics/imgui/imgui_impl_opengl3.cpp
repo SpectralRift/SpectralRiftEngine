@@ -103,7 +103,7 @@
 //  ES 2.0    100       "#version 100"      = WebGL 1.0
 //  ES 3.0    300       "#version 300 es"   = WebGL 2.0
 //----------------------------------------
-
+#if false
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -140,6 +140,8 @@
 #if defined(ENGINE_BACKEND_OPENGL_ES)
 #include <glad/gles2.h>
 #else
+#include <glad/gl.h>
+#endif
 // Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
 // Helper libraries are often used for this purpose! Here we are using our own minimal custom loader based on gl3w.
 // In the rest of your app/engine, you can use another loader of your choice (gl3w, glew, glad, glbinding, glext, glLoadGen, etc.).
@@ -149,9 +151,6 @@
 // Changes to this backend using new APIs should be accompanied by a regenerated stripped loader version.
 
 // Vertex arrays are not supported on ES2/WebGL1 unless Emscripten which uses an extension
-#include "glad/gl.h"
-
-#endif
 
 #define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 
@@ -919,3 +918,4 @@ void ImGui_ImplOpenGL3_DestroyDeviceObjects() {
 #endif
 
 #endif // #ifndef IMGUI_DISABLE
+#endif

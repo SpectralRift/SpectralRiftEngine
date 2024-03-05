@@ -6,7 +6,9 @@
 #include <api.hpp>
 
 #include <utils/enums/graphics.hpp>
+#include <utils/color.hpp>
 #include <graphics/rendering/shader.hpp>
+#include <glm/glm.hpp>
 
 namespace engine::graphics {
     /// <summary>
@@ -66,6 +68,10 @@ namespace engine::graphics {
         /// </summary>
         void use();
 
+        void set_uniform(std::string_view name, const utils::Color& color);
+        void set_uniform(std::string_view name, const glm::mat4& mat);
+        void set_uniform(std::string_view name, int val);
+
         /// <summary>
         /// Retrieves a handle to the shader program used by the backend.
         /// </summary>
@@ -93,4 +99,6 @@ namespace engine::graphics {
         /// </summary>
         std::vector<std::reference_wrapper<Shader>> shaders;
     };
+
+    using ShaderProgramPtr = std::shared_ptr<ShaderProgram>;
 }
