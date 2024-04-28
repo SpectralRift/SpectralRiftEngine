@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphics/interfaces/i_render_backend.hpp>
+#include <graphics/i_render_backend.hpp>
 #include <api.hpp>
 
 namespace engine::graphics::backends {

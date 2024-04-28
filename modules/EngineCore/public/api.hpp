@@ -1,7 +1,19 @@
 #pragma once
 
-// platform specific macros
-#include <platform/macros.hpp>
+// win32 specific macros
+#if defined(WIN32)
+#ifndef ENGINE_API_EXPORT
+#define ENGINE_API_EXPORT __declspec(dllexport)
+#endif
+
+#ifndef ENGINE_API_IMPORT
+#define ENGINE_API_IMPORT __declspec(dllimport)
+#endif
+
+#ifndef ENGINE_TARGET_WIN32
+#define ENGINE_TARGET_WIN32
+#endif
+#endif
 
 // API fallback macros
 #ifndef ENGINE_API_EXPORT
